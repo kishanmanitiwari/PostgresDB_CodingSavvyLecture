@@ -5,6 +5,9 @@ import pkg from "pg";
 const app = express();
 configDotenv();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 //Pool
 const { Pool } = pkg; //Destructring
 
@@ -26,6 +29,26 @@ app.get("/all", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+//post
+app.post("/add", async (req, res) => {
+  try {
+    const { title, author } = req.body;
+    const query =
+      "INSERT INTO books_to_read(title,author) VALUES($1,$2) RETURNING *";
+    const input = [title, author];
+    const data = await KISHAN.query(query, input);
+    res.json(data.rows);
+  } catch (error) {
+    console.log("Errror inserting books, Please try again");
+    res.status(500).json(error);
+  }
+});
+
+//put
+
+
+//delete
 
 //Server
 app.listen(PORT, () => {
